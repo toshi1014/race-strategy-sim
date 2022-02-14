@@ -7,21 +7,30 @@
 
 #include "car.hpp"
 #include "circuit.hpp"
+#include "config.hpp"
 
 namespace race {
 
 class Race {
    private:
     circuit::Circuit circuit;
+
     const std::uint32_t num_of_laps;
+
     std::vector<car::Car> car_list;
 
+    bool grid_fixed{false};
 
    public:
     Race(circuit::Circuit&&, const std::uint32_t&);
 
     void add_car(car::Car&&);
+
+    void formation_lap();
+
     void show_standings() const;
+
+    void start();
 };
 
 }  // namespace race
