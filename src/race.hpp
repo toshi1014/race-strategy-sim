@@ -11,13 +11,19 @@
 
 namespace race {
 
+struct CarState {
+    std::uint32_t position;
+    double distance;  // distance from start line
+    car::Car car;
+};
+
 class Race {
    private:
     circuit::Circuit circuit;
 
     const std::uint32_t num_of_laps;
 
-    std::vector<car::Car> car_list;
+    std::vector<CarState> car_state_list;
 
     bool grid_fixed{false};
 
@@ -31,6 +37,8 @@ class Race {
     void show_standings() const;
 
     void start();
+    
+    void step();
 };
 
 }  // namespace race

@@ -10,18 +10,17 @@ namespace car {
 
 class Car {
    private:
-   public:
-    const std::uint32_t car_num;
-
     const double speed;  // e.g. 1, 0.75
 
-    std::uint32_t lap{1};
+   public:
+    const std::uint32_t car_num;
+    std::uint32_t lap;
 
     Tire tire;
 
-    Car(const std::uint32_t&, const double&, const std::string&);
+    Car(const double&, const std::uint32_t&, const std::string&);
 
-    void step();
+    double step();
 };
 
 }  // namespace car

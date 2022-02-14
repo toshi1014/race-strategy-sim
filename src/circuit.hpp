@@ -7,9 +7,10 @@ namespace circuit {
 
 class Circuit {
    private:
-    const std::uint32_t course_length;
 
    public:
+    const std::uint32_t course_length;
+
     Circuit(const std::uint32_t&);
 };
 
