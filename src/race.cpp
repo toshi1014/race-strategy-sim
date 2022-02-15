@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 #include "race.hpp"
 
@@ -10,7 +11,8 @@ Race::Race(circuit::Circuit&& circuit_, const std::uint32_t& num_of_laps_)
 
 void Race::add_car(car::Car&& arg_car) {
     if (!grid_fixed) {
-        car_state_list.push_back({1, 0, arg_car});
+        std::uint32_t&& position_now = car_state_list.size() + 1;
+        car_state_list.push_back({position_now, 0, arg_car});
     } else {
         std::cerr << "Grid fixed, no more cars" << std::endl;
         std::exit(1);
@@ -18,18 +20,17 @@ void Race::add_car(car::Car&& arg_car) {
 }
 
 void Race::show_standings() const {
-    std::uint32_t idx{};
-
     std::cout << "Pos.\tNo.\t" << std::endl;
 
-    // sort by Car::lap + CarState::distance
-    // std::sort(std::begin(car_state_list), std::end(car_state_list),
-    //           [&](CarState car_state1, CarState car_state2) {
-    //               return car_state1 > car_state2;
-    //           });
+    // if car_state == position_idx, print car number
+    for (std::uint32_t pos_i{1}; pos_i <= car_state_list.size(); pos_i++) {
+        auto car_state_it =
+            std::find_if(std::begin(car_state_list), std::end(car_state_list),
+                         [&](const CarState& car_state) {
+                             return car_state.position == pos_i;
+                         });
 
-    for (const auto& car_state : car_state_list) {
-        std::cout << ++idx << "\t" << car_state.car.car_num << std::endl;
+        std::cout << pos_i << "\t" << (*car_state_it).position << std::endl;
     }
 }
 
@@ -45,9 +46,10 @@ void Race::step() {
     for (auto& car_state : car_state_list) {
         double&& delta{car_state.car.step()};
         car_state.distance += delta;
+
         if (car_state.distance >= circuit.course_length) {
             car_state.distance = car_state.distance - circuit.course_length;
-            car_state.car.lap++;
+            car_state.car.next_lap();
         }
 
         std::cout << car_state.car.car_num << "\t" << car_state.distance

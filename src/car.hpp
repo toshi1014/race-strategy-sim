@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "tire.hpp"
 
@@ -18,9 +19,13 @@ class Car {
 
     Tire tire;
 
-    Car(const double&, const std::uint32_t&, const std::string&);
+    Car(const double&, const std::uint32_t&, const std::vector<TireCompound>&);
+
+    void change_tire(const std::string&);
 
     double step();
+
+    void next_lap();
 };
 
 }  // namespace car

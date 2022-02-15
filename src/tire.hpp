@@ -5,24 +5,28 @@
 
 namespace car {
 
+enum struct TireCompound {
+    hard,
+    medium,
+    soft,
+};
+
 class Tire {
    private:
     double performance{1.};
-    double base_performance;
+    const double base_performance;
 
     std::uint32_t age{};
-    std::uint32_t lifespan;
-
-    enum struct Compound {
-        hard,
-        medium,
-        soft,
-    } compound;
+    const std::uint32_t lifespan;
 
    public:
-    explicit Tire(const std::string&);
+    const TireCompound compound;
+
+    explicit Tire(const TireCompound&);
 
     void step();
+
+    void next_lap();
 
     friend class Car;
 };

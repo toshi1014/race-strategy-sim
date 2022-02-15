@@ -37,7 +37,7 @@ class Race {
     void show_standings() const;
 
     void start();
-    
+
     void step();
 };
 
