@@ -15,11 +15,18 @@ struct TireSpec {
 
 }  // namespace
 
+
 namespace config {
 
-constexpr double tick{0.1};
+constexpr double TICK{0.1};
 
-std::map<car::TireCompound, TireSpec> tire_spec_dict = {
+constexpr std::uint32_t GRID_GAP = 1;
+
+constexpr double BLOCKABLE_RANGE = 3.;
+
+constexpr double BLOCKED_PERFORMANCE_RATIO = 0.8;
+
+const std::map<car::TireCompound, TireSpec> TIRE_SPEC_DICT = {
     {car::TireCompound::hard, {30, 0.8}},
     {car::TireCompound::medium, {20, 0.9}},
     {car::TireCompound::soft, {10, 1.}},

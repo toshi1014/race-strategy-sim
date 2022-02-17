@@ -15,6 +15,7 @@ class Car {
 
    public:
     const std::uint32_t car_num;
+
     std::uint32_t lap;
 
     Tire tire;
@@ -23,7 +24,7 @@ class Car {
 
     void change_tire(const std::string&);
 
-    double step();
+    double step(const double&, const car::Car&);
 
     void next_lap();
 };

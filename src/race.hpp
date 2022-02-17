@@ -27,6 +27,18 @@ class Race {
 
     bool grid_fixed{false};
 
+    bool bool_checkered{false};
+
+    void next_lap(CarState&);
+
+    void step();
+
+    bool is_checkered(const CarState&) const;
+
+    CarState get_forerunner(std::uint32_t&) const;
+
+    double get_distance_gap(const CarState&, const CarState&) const;
+
    public:
     Race(circuit::Circuit&&, const std::uint32_t&);
 
@@ -37,8 +49,6 @@ class Race {
     void show_standings() const;
 
     void start();
-
-    void step();
 };
 
 }  // namespace race

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "car.hpp"
+#include "config.hpp"
 
 namespace car {
 
@@ -10,11 +11,16 @@ Car::Car(const double& speed_, const std::uint32_t& car_num_,
 
 void Car::change_tire(const std::string& str) {}
 
-double Car::step() {
+double Car::step(const double& distance_gap, const car::Car& forerunner) {
     tire.step();
 
-    // distance per tick
-    return speed * tire.performance;
+    double gain = speed * tire.performance;  // distance per tick
+
+    if (lap == forerunner.lap && distance_gap <= config::BLOCKABLE_RANGE) {
+        gain *= config::BLOCKED_PERFORMANCE_RATIO;
+    }
+
+    return gain;
 }
 
 void Car::next_lap() {
