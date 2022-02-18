@@ -8,7 +8,7 @@
 
 // FIXME: param
 constexpr std::uint32_t COURSE_LENGTH{10};
-constexpr std::uint32_t NUM_OF_LAPS{30};
+constexpr std::uint32_t NUM_OF_LAPS{20};
 
 int main() {
     race::Race race{circuit::Circuit{COURSE_LENGTH}, NUM_OF_LAPS};

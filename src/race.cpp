@@ -13,6 +13,7 @@ CarState& CarState::operator=(const CarState& other) {
     position = other.position;
     distance = other.distance;
     car = other.car;
+    checkered = other.checkered;
     return *this;
 }
 
@@ -24,9 +25,9 @@ void Race::add_car(car::Car&& arg_car) {
         std::uint32_t position_now = car_state_list.size() + 1;
 
         car_state_list.push_back({
-            position_now,
-            -static_cast<double>(position_now * config::GRID_GAP),
+            position_now, -static_cast<double>(position_now * config::GRID_GAP),
             arg_car,
+            false,  // checkered
         });
 
     } else {
@@ -47,39 +48,49 @@ const CarState& Race::get_car_state_by_position(
 }
 
 void Race::show_standings() const {
-    std::cout << "Pos.\tNo.\t" << std::endl;
+    std::cout << "Pos.\tNo.\tLap\tTire\tAge\n" << std::endl;
 
     for (std::uint32_t pos_i{1}; pos_i <= car_state_list.size(); pos_i++) {
         const CarState& car_state = Race::get_car_state_by_position(pos_i);
-        std::cout << pos_i << "\t" << car_state.car.car_num << std::endl;
+        std::cout << pos_i << "\t" << car_state.car.car_num << "\t"
+                  << car_state.car.lap << "\t"
+                  << car_state.car.tire.get_compound_str() << "\t"
+                  << car_state.car.tire.age << "\t" << std::endl;
     }
 }
 
 void Race::formation_lap() { grid_fixed = true; }
 
 void Race::start() {
-    for (double timer{}; timer < 1. && !bool_checkered; timer += config::TICK) {
-        std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
-
+    for (double timer{}; timer < 100. && !all_checkered;
+         timer += config::TICK) {
         step();
 
-        for (const auto& car_state : car_state_list) {
-            std::cout << "Num. " << car_state.car.car_num
-                      << "\tdistance: " << car_state.distance << "\tPos. "
-                      << car_state.position << std::endl;
-        }
+        // {
+        //     std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
+        //     for (const auto& car_state : car_state_list) {
+        //         std::cout << "No." << car_state.car.car_num
+        //                   << "\tdistance: " << car_state.distance << "\tPos."
+        //                   << car_state.position << std::endl;
+        //     }
+        // }
     }
+
+    std::cout << "\n\n========= Checkered =========\n" << std::endl;
 }
 
 void Race::next_lap(CarState& car_state) {
-    car_state.distance = car_state.distance - circuit.course_length;
-    car_state.car.next_lap();
-
-    if (is_checkered(car_state)) {
-        bool_checkered = true;
-        std::cout << "\n\n========= Checkered =========\n" << std::endl;
+    if (Race::is_checkered(car_state)) {
+        std::cout << "No." << car_state.car.car_num << "\tcheckered"
+                  << std::endl;
+        checker_flg = true;
+        car_state.checkered = true;
+        all_checkered = Race::is_all_checkered();
     } else {
-        std::cout << "No. " << car_state.car.car_num
+        car_state.distance = car_state.distance - circuit.course_length;
+        car_state.car.next_lap();
+
+        std::cout << "No." << car_state.car.car_num
                   << "\tnext lap: " << car_state.car.lap << std::endl;
     }
 }
@@ -89,9 +100,11 @@ void Race::step() {
         CarState& car_state =
             const_cast<CarState&>(Race::get_car_state_by_position(pos_i));
 
+        if (car_state.checkered) continue;
+
         double delta{};
 
-        if (car_state.position == 1) {
+        if (pos_i == 1) {
             delta =
                 car_state.car.step(config::BLOCKABLE_RANGE + 1., car_state.car);
 
@@ -113,7 +126,7 @@ void Race::step() {
 }
 
 bool Race::is_checkered(const CarState& car_state) const {
-    return car_state.car.lap > num_of_laps;
+    return car_state.car.lap >= num_of_laps || checker_flg;
 }
 
 CarState& Race::get_forerunner(const CarState& self) {
@@ -127,19 +140,31 @@ CarState& Race::get_forerunner(const CarState& self) {
 
 double Race::get_distance_gap(const CarState& forerunner,
                               const CarState& self) const {
-    const double gap{std::abs(forerunner.distance - self.distance)};
-    return std::min(gap, circuit.course_length - gap);
+    const double gap_base{std::abs(forerunner.distance - self.distance)};
+    const double gap{std::min(gap_base, circuit.course_length - gap_base)};
+
+    return gap + (forerunner.car.lap - self.car.lap) * circuit.course_length;
 }
 
 void Race::overtake(CarState& forerunner, CarState& overtaking_car) {
-    if (forerunner.car.lap == overtaking_car.car.lap) {
-        std::cout << "Num. " << overtaking_car.car.car_num << " passed Num."
-                  << forerunner.car.car_num << "\n"
-                  << std::endl;
+    if (!forerunner.checkered) {
+        if (forerunner.car.lap == overtaking_car.car.lap) {
+            std::cout << "No." << overtaking_car.car.car_num << "\tpassed No."
+                      << forerunner.car.car_num << std::endl;
 
-        forerunner.position++;
-        overtaking_car.position--;
+            forerunner.position++;
+            overtaking_car.position--;
+        }
     }
+}
+
+bool Race::is_all_checkered() const {
+    for (const auto& car_state : car_state_list) {
+        if (!car_state.checkered) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }  // namespace race

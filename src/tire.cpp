@@ -17,4 +17,17 @@ void Tire::step() {
 
 void Tire::next_lap() { age++; }
 
+std::string Tire::get_compound_str() const {
+    if (compound == TireCompound::hard)
+        return "H";
+    else if (compound == TireCompound::medium)
+        return "M";
+    else if (compound == TireCompound::soft)
+        return "S";
+    else {
+        std::cerr << "Unknown compound";
+        std::exit(1);
+    }
+}
+
 }  // namespace car

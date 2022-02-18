@@ -15,6 +15,7 @@ struct CarState {
     std::uint32_t position;
     double distance;  // distance from start line
     car::Car car;
+    bool checkered;
 
     CarState& operator=(const CarState&);
 };
@@ -29,7 +30,9 @@ class Race {
 
     bool grid_fixed{false};
 
-    bool bool_checkered{false};
+    bool checker_flg{false};
+
+    bool all_checkered{false};
 
     void next_lap(CarState&);
 
@@ -44,6 +47,8 @@ class Race {
     void overtake(CarState&, CarState&);
 
     const CarState& get_car_state_by_position(const std::uint32_t&) const;
+
+    bool is_all_checkered() const;
 
    public:
     Race(circuit::Circuit&&, const std::uint32_t&);
