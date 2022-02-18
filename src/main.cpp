@@ -7,8 +7,8 @@
 #include "race.hpp"
 
 // FIXME: param
-constexpr std::uint32_t COURSE_LENGTH{100};
-constexpr std::uint32_t NUM_OF_LAPS{50};
+constexpr std::uint32_t COURSE_LENGTH{10};
+constexpr std::uint32_t NUM_OF_LAPS{30};
 
 int main() {
     race::Race race{circuit::Circuit{COURSE_LENGTH}, NUM_OF_LAPS};
@@ -18,7 +18,7 @@ int main() {
         std::tuple<std::uint32_t, double, std::vector<car::TireCompound>>>
         car_data{
             {1, 1., {car::TireCompound::medium, car::TireCompound::hard}},
-            {2, 1., {car::TireCompound::hard, car::TireCompound::medium}},
+            {2, 2., {car::TireCompound::hard, car::TireCompound::medium}},
             {3, 1., {car::TireCompound::medium, car::TireCompound::hard}},
             {4, 1., {car::TireCompound::hard, car::TireCompound::medium}},
             {5, 1., {car::TireCompound::medium, car::TireCompound::hard}},
@@ -37,4 +37,6 @@ int main() {
 
     std::cout << "\nstart\n" << std::endl;
     race.start();
+
+    race.show_standings();
 }

@@ -16,11 +16,15 @@ class Car {
    public:
     const std::uint32_t car_num;
 
-    std::uint32_t lap;
+    std::uint32_t lap{1};
 
     Tire tire;
 
     Car(const double&, const std::uint32_t&, const std::vector<TireCompound>&);
+
+    Car(const Car&);
+
+    Car& operator=(const Car&);
 
     void change_tire(const std::string&);
 
