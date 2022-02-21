@@ -2,6 +2,8 @@
 #define TIRE
 
 #include <string>
+#include <tuple>
+#include <vector>
 
 namespace car {
 
@@ -11,9 +13,23 @@ enum struct TireCompound {
     soft,
 };
 
+struct CompoundLap {
+    const TireCompound compound;
+    const std::uint32_t lap;
+};
+
+struct TireStrategy {
+    const std::vector<CompoundLap> tire_strategy;
+
+    const CompoundLap& at(const std::uint32_t&) const;
+
+    std::uint32_t size() const;
+};
+
 class Tire {
    private:
     double performance{1.};
+
     const double base_performance;
 
     const std::uint32_t lifespan;

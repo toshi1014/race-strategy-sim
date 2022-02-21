@@ -13,6 +13,10 @@ class Car {
    private:
     const double speed;  // e.g. 1, 0.75
 
+    const TireStrategy tire_strategy;
+
+    std::uint32_t tire_cnt{1};
+
    public:
     const std::uint32_t car_num;
 
@@ -20,7 +24,7 @@ class Car {
 
     Tire tire;
 
-    Car(const double&, const std::uint32_t&, const std::vector<TireCompound>&);
+    Car(const double&, const std::uint32_t&, const TireStrategy&);
 
     Car(const Car&);
 

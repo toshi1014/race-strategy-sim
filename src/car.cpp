@@ -6,8 +6,12 @@
 namespace car {
 
 Car::Car(const double& speed_, const std::uint32_t& car_num_,
-         const std::vector<TireCompound>& tire_strategy)
-    : speed(speed_), car_num(car_num_), tire(tire_strategy[0]) {
+         const TireStrategy& tire_strategy_)
+    : speed(speed_),
+      tire_strategy(tire_strategy_),
+      car_num(car_num_),
+      tire(tire_strategy_.at(0).compound)  // put start tire on
+{
     std::cout << "constructed" << std::endl;
 }
 
@@ -32,12 +36,17 @@ double Car::step(const double& distance_gap, const car::Car& forerunner) {
         gain *= config::BLOCKED_PERFORMANCE_RATIO;
     }
 
+    std::cout << "tire size " << tire_strategy.size() << std::endl;
     return gain;
 }
 
 void Car::next_lap() {
     lap++;
-    tire.next_lap();
+
+    // if (lap == tire_strategy.at(tire_cnt).lap) {
+    // } else {
+    //     tire.next_lap();
+    // }
 }
 
 }  // namespace car

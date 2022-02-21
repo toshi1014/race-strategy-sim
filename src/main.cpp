@@ -14,28 +14,51 @@ int main() {
     race::Race race{circuit::Circuit{COURSE_LENGTH}, NUM_OF_LAPS};
 
     // {car_num, speed, tire_strategy}, ...
-    const std::vector<
-        std::tuple<std::uint32_t, double, std::vector<car::TireCompound>>>
-        car_data{
-            {1, 1., {car::TireCompound::medium, car::TireCompound::hard}},
-            {2, 2., {car::TireCompound::hard, car::TireCompound::medium}},
-            {3, 1., {car::TireCompound::medium, car::TireCompound::hard}},
-            {4, 1., {car::TireCompound::hard, car::TireCompound::medium}},
-            {5, 1., {car::TireCompound::medium, car::TireCompound::hard}},
-        };
+    std::vector<std::tuple<std::uint32_t, double, car::TireStrategy>> car_data{
+        {1,
+         1.,
+         {{
+             {car::TireCompound::medium, 10},
+             {car::TireCompound::hard, 20},
+         }}},
+        {2,
+         2.,
+         {{
+             {car::TireCompound::hard, 10},
+             {car::TireCompound::medium, 20},
+         }}},
+        {3,
+         1.,
+         {{
+             {car::TireCompound::medium, 10},
+             {car::TireCompound::hard, 20},
+         }}},
+        {4,
+         1.,
+         {{
+             {car::TireCompound::hard, 10},
+             {car::TireCompound::medium, 20},
+         }}},
+        {5,
+         1.,
+         {{
+             {car::TireCompound::medium, 10},
+             {car::TireCompound::hard, 20},
+         }}},
+    };
 
-    for (auto& car_datum : car_data) {
-        std::uint32_t car_num_now{};
-        double speed_now{};
-        std::vector<car::TireCompound> tire_strategy{};
-        std::tie(car_num_now, speed_now, tire_strategy) = car_datum;
+    for (const auto& car_datum : car_data) {
+        std::uint32_t car_num_now{std::get<0>(car_datum)};
+        double speed_now{std::get<1>(car_datum)};
+        car::TireStrategy tire_strategy{std::get<2>(car_datum)};
         race.add_car(car::Car{speed_now, car_num_now, tire_strategy});
     }
 
     race.formation_lap();
     race.show_standings();
 
-    std::cout << "\nstart\n" << std::endl;
+    std::cout << "\n\n========= Start =========\n" << std::endl;
+
     race.start();
 
     race.show_standings();

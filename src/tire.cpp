@@ -5,6 +5,12 @@
 
 namespace car {
 
+const CompoundLap& TireStrategy::at(const std::uint32_t& idx) const {
+    return tire_strategy.at(idx);
+}
+
+std::uint32_t TireStrategy::size() const { return tire_strategy.size(); }
+
 Tire::Tire(const TireCompound& compound_)
     : base_performance(config::TIRE_SPEC_DICT.at(compound_).base_performance),
       lifespan(config::TIRE_SPEC_DICT.at(compound_).lifespan),
