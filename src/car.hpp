@@ -2,6 +2,7 @@
 #define CAR_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,16 +14,16 @@ class Car {
    private:
     const double speed;  // e.g. 1, 0.75
 
-    const TireStrategy tire_strategy;
-
     std::uint32_t tire_cnt{1};
 
    public:
+    const TireStrategy tire_strategy;
+
     const std::uint32_t car_num;
 
     std::uint32_t lap{1};
 
-    Tire tire;
+    std::shared_ptr<Tire> tire_ptr;
 
     Car(const double&, const std::uint32_t&, const TireStrategy&);
 
@@ -30,7 +31,7 @@ class Car {
 
     Car& operator=(const Car&);
 
-    void change_tire(const std::string&);
+    void change_tire(const std::uint32_t& tire_cnt);
 
     double step(const double&, const car::Car&);
 

@@ -14,6 +14,7 @@ CarState& CarState::operator=(const CarState& other) {
     distance = other.distance;
     car = other.car;
     checkered = other.checkered;
+    std::cout << "CarState operator=" << std::endl;
     return *this;
 }
 
@@ -24,12 +25,13 @@ void Race::add_car(car::Car&& arg_car) {
     if (!grid_fixed) {
         std::uint32_t position_now = car_state_list.size() + 1;
 
+        std::cout << "car adding..." << std::endl;
         car_state_list.push_back({
             position_now, -static_cast<double>(position_now * config::GRID_GAP),
             arg_car,
             false,  // checkered
         });
-
+        std::cout << "car added" << std::endl;
     } else {
         std::cerr << "Grid fixed, no more cars" << std::endl;
         std::exit(1);
@@ -54,8 +56,8 @@ void Race::show_standings() const {
         const CarState& car_state = Race::get_car_state_by_position(pos_i);
         std::cout << pos_i << "\t" << car_state.car.car_num << "\t"
                   << car_state.car.lap << "\t"
-                  << car_state.car.tire.get_compound_str() << "\t"
-                  << car_state.car.tire.age << "\t" << std::endl;
+                  << car_state.car.tire_ptr->get_compound_str() << "\t"
+                  << car_state.car.tire_ptr->age << "\t" << std::endl;
     }
 }
 
