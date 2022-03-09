@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "car.hpp"
@@ -23,13 +24,15 @@ struct CarState {
     CarState& operator=(const CarState&);
 };
 
+using CarStatePtr = std::shared_ptr<CarState>;
+
 class Race {
    private:
     circuit::Circuit circuit;
 
     const std::uint32_t num_of_laps;
 
-    std::vector<CarState> car_state_list;
+    std::vector<CarStatePtr> car_state_ptr_list;
 
     bool grid_fixed{false};
 
@@ -37,21 +40,21 @@ class Race {
 
     bool all_checkered{false};
 
-    void next_lap(CarState&);
+    void next_lap(CarStatePtr&);
 
     void step();
 
-    bool is_checkered(const CarState&) const;
+    bool is_checkered(const CarStatePtr&) const;
 
-    CarState& get_forerunner(const CarState&);
+    CarStatePtr& get_forerunner(const CarStatePtr&);
 
-    double get_distance_gap(const CarState&, const CarState&) const;
+    double get_distance_gap(const CarStatePtr&, const CarStatePtr&) const;
 
-    void overtake(CarState&, CarState&);
+    void overtake(CarStatePtr&, CarStatePtr&);
 
-    const CarState& get_car_state_by_position(const std::uint32_t&) const;
+    const CarStatePtr& get_car_state_by_position(const std::uint32_t&) const;
 
-    const CarState& get_car_state_by_car_num(const std::uint32_t&) const;
+    const CarStatePtr& get_car_state_by_car_num(const std::uint32_t&) const;
 
     bool is_all_checkered() const;
 
@@ -66,9 +69,9 @@ class Race {
 
     void start();
 
-    void pit_stop(CarState&);
+    void pit_stop(CarStatePtr&);
 
-    void pit_exit(CarState&);
+    void pit_exit(CarStatePtr&);
 };
 
 }  // namespace race
