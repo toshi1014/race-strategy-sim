@@ -2,6 +2,7 @@
 
 #include "car.hpp"
 #include "config.hpp"
+#include "race.hpp"
 
 namespace car {
 
@@ -10,7 +11,6 @@ Car::Car(const double& speed_, const std::uint32_t& car_num_,
     : speed(speed_), tire_strategy(tire_strategy_), car_num(car_num_) {
     tire_ptr = tire_strategy.at(0)->tire_ptr;  // put start tire on
     std::cout << "Car constructed " << std::endl;
-    tire_strategy.repr();
 }
 
 Car::Car(const Car& other)
@@ -26,11 +26,9 @@ Car& Car::operator=(const Car& other) {
     return *this;
 }
 
-void Car::change_tire(const std::uint32_t& tire_cnt) {
+void Car::change_tire() {
     tire_ptr = tire_strategy.at(tire_cnt)->tire_ptr;
-    std::cout << "No." << car_num << "\tchanged to "
-              << tire_strategy.at(tire_cnt)->tire_ptr->get_compound_str()
-              << " tire" << std::endl;
+    tire_cnt++;
 }
 
 double Car::step(const double& distance_gap, const car::Car& forerunner) {
@@ -45,15 +43,18 @@ double Car::step(const double& distance_gap, const car::Car& forerunner) {
     return gain;
 }
 
-void Car::next_lap() {
+bool Car::next_lap() {
+    bool pit_stop{false};
+
     if (lap == tire_strategy.at(tire_cnt - 1)->lap) {
-        change_tire(tire_cnt);
-        tire_cnt++;
+        pit_stop = true;
     }
 
     tire_ptr->next_lap();
 
     lap++;
+
+    return pit_stop;
 }
 
 }  // namespace car

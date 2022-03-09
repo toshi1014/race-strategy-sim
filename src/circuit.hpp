@@ -7,11 +7,11 @@ namespace circuit {
 
 class Circuit {
    private:
-
    public:
     const std::uint32_t course_length;
+    const std::uint32_t pit_time_loss;
 
-    Circuit(const std::uint32_t&);
+    Circuit(const std::uint32_t&, const std::uint32_t&);
 };
 
 }  // namespace circuit

@@ -31,11 +31,11 @@ class Car {
 
     Car& operator=(const Car&);
 
-    void change_tire(const std::uint32_t& tire_cnt);
+    void change_tire();
 
     double step(const double&, const car::Car&);
 
-    void next_lap();
+    bool next_lap();  // return true if pit_stop
 };
 
 }  // namespace car

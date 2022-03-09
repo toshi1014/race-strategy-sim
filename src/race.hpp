@@ -17,6 +17,9 @@ struct CarState {
     car::Car car;
     bool checkered;
 
+    bool in_pit;
+    bool pit_time_loss;
+
     CarState& operator=(const CarState&);
 };
 
@@ -48,6 +51,8 @@ class Race {
 
     const CarState& get_car_state_by_position(const std::uint32_t&) const;
 
+    const CarState& get_car_state_by_car_num(const std::uint32_t&) const;
+
     bool is_all_checkered() const;
 
    public:
@@ -60,6 +65,10 @@ class Race {
     void show_standings() const;
 
     void start();
+
+    void pit_stop(CarState&);
+
+    void pit_exit(CarState&);
 };
 
 }  // namespace race

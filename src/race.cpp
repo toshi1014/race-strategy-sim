@@ -30,6 +30,8 @@ void Race::add_car(car::Car&& arg_car) {
             position_now, -static_cast<double>(position_now * config::GRID_GAP),
             arg_car,
             false,  // checkered
+            false,  // in_pit
+            0,      // pit_time_loss
         });
         std::cout << "car added" << std::endl;
     } else {
@@ -44,6 +46,17 @@ const CarState& Race::get_car_state_by_position(
         std::find_if(std::begin(car_state_list), std::end(car_state_list),
                      [&](const CarState& car_state) {
                          return car_state.position == position;
+                     });
+
+    return *car_state_it;
+}
+
+const CarState& Race::get_car_state_by_car_num(
+    const std::uint32_t& car_num) const {
+    const auto car_state_it =
+        std::find_if(std::begin(car_state_list), std::end(car_state_list),
+                     [&](const CarState& car_state) {
+                         return car_state.car.car_num == car_num;
                      });
 
     return *car_state_it;
@@ -90,7 +103,8 @@ void Race::next_lap(CarState& car_state) {
         all_checkered = Race::is_all_checkered();
     } else {
         car_state.distance = car_state.distance - circuit.course_length;
-        car_state.car.next_lap();
+        bool pit_stop = car_state.car.next_lap();
+        if (pit_stop) Race::pit_stop(car_state);
 
         std::cout << "No." << car_state.car.car_num
                   << "\tnext lap: " << car_state.car.lap << std::endl;
@@ -111,13 +125,21 @@ void Race::step() {
                 car_state.car.step(config::BLOCKABLE_RANGE + 1., car_state.car);
 
         } else {
-            CarState& forerunner = Race::get_forerunner(car_state);
-            const double distance_gap =
-                Race::get_distance_gap(forerunner, car_state);
+            if (car_state.in_pit) {
+                car_state.pit_time_loss += config::TICK;
+                if (car_state.pit_time_loss >= circuit.pit_time_loss)
+                    Race::pit_exit(car_state);
 
-            delta = car_state.car.step(distance_gap, forerunner.car);
+            } else {
+                CarState& forerunner = Race::get_forerunner(car_state);
+                const double distance_gap =
+                    Race::get_distance_gap(forerunner, car_state);
 
-            if (delta >= distance_gap) Race::overtake(forerunner, car_state);
+                delta = car_state.car.step(distance_gap, forerunner.car);
+
+                if (delta >= distance_gap)
+                    Race::overtake(forerunner, car_state);
+            }
         }
 
         car_state.distance += delta;
@@ -167,6 +189,21 @@ bool Race::is_all_checkered() const {
         }
     }
     return true;
+}
+
+// static func
+void Race::pit_stop(CarState& car_state) {
+    car_state.in_pit = true;
+
+    car_state.car.change_tire();
+    std::cout << "No." << car_state.car.car_num << "\tchanged to "
+              << car_state.car.tire_ptr->get_compound_str() << " tire"
+              << std::endl;
+}
+
+void Race::pit_exit(CarState& car_state) {
+    car_state.in_pit = false;
+    car_state.pit_time_loss = 0.;
 }
 
 }  // namespace race

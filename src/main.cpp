@@ -8,10 +8,11 @@
 
 // FIXME: param
 constexpr std::uint32_t COURSE_LENGTH{10};
+constexpr std::uint32_t PIT_TIME_LOSS{1};
 constexpr std::uint32_t NUM_OF_LAPS{20};
 
 int main() {
-    race::Race race{circuit::Circuit{COURSE_LENGTH}, NUM_OF_LAPS};
+    race::Race race{circuit::Circuit{COURSE_LENGTH, PIT_TIME_LOSS}, NUM_OF_LAPS};
 
     // {car_num, speed, tire_strategy}, ...
     std::vector<std::tuple<std::uint32_t, double,
