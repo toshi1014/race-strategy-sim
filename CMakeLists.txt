@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
-project(MyProj)
+project(race-strategy-sim)
 
 set(SRC_DIR src)
+set(EXE_FILENAME a.out)
 
 add_compile_options(
     -std=c++17
@@ -18,5 +19,27 @@ add_library(
     ${CPP_FILE}
 )
 
-add_executable(a.out ${SRC_DIR}/main.cpp)
-target_link_libraries(a.out mylib)
+include(FetchContent)
+FetchContent_Declare(
+    json
+    URL
+    https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+
+target_include_directories(
+    mylib
+    PRIVATE
+    ${CMAKE_BINARY_DIR}/_deps/json-src/single_include
+)
+
+add_executable(
+    ${EXE_FILENAME}
+    ${SRC_DIR}/main.cpp
+)
+
+target_link_libraries(
+    ${EXE_FILENAME}
+    mylib
+    nlohmann_json::nlohmann_json
+)

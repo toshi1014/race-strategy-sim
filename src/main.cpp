@@ -1,4 +1,6 @@
+#include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <tuple>
 #include <vector>
 
@@ -6,55 +8,28 @@
 #include "config.hpp"
 #include "race.hpp"
 
-// FIXME: param
-constexpr std::uint32_t COURSE_LENGTH{10};
-constexpr std::uint32_t PIT_TIME_LOSS{1};
-constexpr std::uint32_t NUM_OF_LAPS{20};
-
 int main() {
-    race::Race race{circuit::Circuit{COURSE_LENGTH, PIT_TIME_LOSS}, NUM_OF_LAPS};
+    using json = nlohmann::json;
+    std::ifstream settings_file("settings.json");
+    json settings_json;
+    settings_file >> settings_json;
 
-    // {car_num, speed, tire_strategy}, ...
-    std::vector<std::tuple<std::uint32_t, double,
-                           std::vector<std::tuple<std::string, std::uint32_t>>>>
-        car_data{
-            {1,
-             1.,
-             {{
-                 {"medium", 10},
-                 {"hard", 21},
-             }}},
-            {2,
-             1.,
-             {{
-                 {"hard", 10},
-                 {"medium", 21},
-             }}},
-            {3,
-             1.,
-             {{
-                 {"medium", 10},
-                 {"hard", 21},
-             }}},
-            {4,
-             1.,
-             {{
-                 {"hard", 10},
-                 {"medium", 21},
-             }}},
-            {5,
-             1.,
-             {{
-                 {"medium", 10},
-                 {"hard", 21},
-             }}},
-        };
+    race::Race race{circuit::Circuit{settings_json["course_length"],
+                                     settings_json["pit_time_loss"]},
+                    settings_json["num_of_laps"]};
 
-    for (const auto& car_datum : car_data) {
-        const std::uint32_t car_num_now{std::get<0>(car_datum)};
-        const double speed_now{std::get<1>(car_datum)};
-        const car::TireStrategy tire_strategy{std::get<2>(car_datum)};
-        race.add_car(car::Car{speed_now, car_num_now, tire_strategy});
+    for (const auto& car_datum : settings_json["car_data"]) {
+        std::vector<std::tuple<std::string, std::uint32_t>> raw_tire_strategy;
+
+        for (const auto& strategy : car_datum["tire_strategy"]) {
+            raw_tire_strategy.push_back(
+                {strategy["compound"].get<std::string>(),
+                 strategy["lap"].get<std::uint32_t>()});
+        }
+
+        race.add_car(car::Car{car_datum["speed"].get<double>(),
+                              car_datum["car_num"].get<std::uint32_t>(),
+                              {raw_tire_strategy}});
     }
 
     race.formation_lap();
