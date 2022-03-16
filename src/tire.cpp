@@ -53,7 +53,6 @@ TireStrategy::TireStrategy(
         tire_strategy_str) {
     std::cout << "TireStrategy constructor" << std::endl;
 
-    std::uint32_t tirelap_idx{};
     for (const auto& tirelap_str : tire_strategy_str) {
         std::shared_ptr<Tire> tire_ptr_tmp;
         if (std::get<0>(tirelap_str) == "hard")
@@ -69,13 +68,12 @@ TireStrategy::TireStrategy(
         }
 
         std::shared_ptr<TireLap> tirelap_ptr_tmp(
-            new TireLap{tire_ptr_tmp, std::get<1>(tirelap_str)});
+            new TireLap{std::move(tire_ptr_tmp), std::get<1>(tirelap_str)});
 
-        tire_strategy[tirelap_idx++] = std::move(tirelap_ptr_tmp);
-        tirelap_ptr_tmp.reset();
+        tire_strategy.push_back(std::move(tirelap_ptr_tmp));
     }
 
-    tire_num = tirelap_idx;
+    tire_num = tire_strategy.size();
 }
 
 TireStrategy::TireStrategy(const TireStrategy& other)

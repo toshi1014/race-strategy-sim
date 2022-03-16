@@ -32,7 +32,7 @@ void Race::add_car(car::Car&& arg_car) {
             0,      // pit_time_loss
         });
         std::cout << "car adding..." << std::endl;
-        car_state_ptr_list.push_back(car_state_ptr);
+        car_state_ptr_list.push_back(std::move(car_state_ptr));
         std::cout << "car added" << std::endl;
     } else {
         std::cerr << "Grid fixed, no more cars" << std::endl;
@@ -78,17 +78,18 @@ void Race::show_standings() const {
 void Race::formation_lap() { grid_fixed = true; }
 
 void Race::start() {
-    for (double timer{}; timer < 100. && !all_checkered;
-         timer += config::TICK) {
+    for (double timer{}; timer < 30. && !all_checkered; timer += config::TICK) {
         step();
 
         // {
         //     std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
-        //     for (const auto& car_state : car_state_ptr_list) {
-        //         std::cout << "No." << car_state.car.car_num
-        //                   << "\tdistance: " << car_state.distance << "\tPos."
-        //                   << car_state.position << std::endl;
+        //     for (const auto& car_state_ptr : car_state_ptr_list) {
+        //         std::cout << "No." << car_state_ptr->car.car_num
+        //                   << "\tlap: " << car_state_ptr->car.lap
+        //                   << "\tdis: " << car_state_ptr->distance << "\tPos."
+        //                   << car_state_ptr->position << std::endl;
         //     }
+        //     std::cout << "" << std::endl;
         // }
     }
 
@@ -141,6 +142,12 @@ void Race::step() {
                 if (delta >= distance_gap)
                     Race::overtake(forerunner, car_state_ptr);
             }
+        }
+
+        if (delta == 0.0) {
+            std::cerr << "No." << car_state_ptr->car.car_num << " stopped"
+                      << std::endl;
+            std::exit(1);
         }
 
         car_state_ptr->distance += delta;

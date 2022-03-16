@@ -47,7 +47,7 @@ class Tire {
 
 struct TireLap {
     std::shared_ptr<Tire> tire_ptr;
-    const std::uint32_t& lap;
+    const std::uint32_t lap;
 };
 
 struct TireStrategy {
@@ -55,7 +55,7 @@ struct TireStrategy {
     std::uint32_t tire_num;
 
    public:
-    std::shared_ptr<TireLap> tire_strategy[MAX_TIRE_NUM];
+    std::vector<std::shared_ptr<TireLap>> tire_strategy;
 
     TireStrategy(const std::vector<std::tuple<std::string, std::uint32_t>>&);
 
