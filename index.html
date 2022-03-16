@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>race-strategy-sim</title>
+    <style>
+        canvas {
+            border: 1px solid
+        }
+    </style>
+</head>
+
+<body>
+    <input type="file" id="picker" accept=".json" onChange="loadSettings(this)"/>
+
+    <button type="button" onClick="start()">start</button>
+
+    <canvas id="canvas" width="1000" height="500"></canvas>
+</body>
+
+<script text="text/javascript" src="script.js"></script>
+
+</html>

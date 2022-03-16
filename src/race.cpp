@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <limits>
+#include <nlohmann/json.hpp>
 #include <utility>
 
 #include "config.hpp"
@@ -78,22 +80,38 @@ void Race::show_standings() const {
 void Race::formation_lap() { grid_fixed = true; }
 
 void Race::start() {
+    using json = nlohmann::json;
+    json j;
+    j["lap_chart"];
+
     for (double timer{}; timer < 30. && !all_checkered; timer += config::TICK) {
         step();
 
-        // {
-        //     std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
-        //     for (const auto& car_state_ptr : car_state_ptr_list) {
-        //         std::cout << "No." << car_state_ptr->car.car_num
-        //                   << "\tlap: " << car_state_ptr->car.lap
-        //                   << "\tdis: " << car_state_ptr->distance << "\tPos."
-        //                   << car_state_ptr->position << std::endl;
-        //     }
-        //     std::cout << "" << std::endl;
-        // }
+        // std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
+
+        json j_tmp;
+
+        for (const auto& car_state_ptr : car_state_ptr_list) {
+            // TODO: add more info
+            j_tmp.push_back({
+                {"car_num", car_state_ptr->car.car_num},
+                {"lap", car_state_ptr->car.lap},
+                {"distance", car_state_ptr->distance / circuit.course_length},
+                {"position", car_state_ptr->position},
+            });
+            // std::cout << "No." << car_state_ptr->car.car_num
+            //           << "\tlap: " << car_state_ptr->car.lap
+            //           << "\tdis: " << car_state_ptr->distance << "\tPos."
+            //           << car_state_ptr->position << std::endl;
+        }
+        // std::cout << "" << std::endl;
+        j["lap_chart"].push_back(j_tmp);
     }
 
     std::cout << "\n\n========= Checkered =========\n" << std::endl;
+
+    std::ofstream out("out.json");
+    out << std::setw(4) << j << std::endl;
 }
 
 void Race::next_lap(CarStatePtr& car_state_ptr) {

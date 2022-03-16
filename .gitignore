@@ -3,3 +3,4 @@ build/
 *.o
 
 memo.md
+out.json
