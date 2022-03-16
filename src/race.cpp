@@ -31,7 +31,7 @@ void Race::add_car(car::Car&& arg_car) {
             arg_car,
             false,  // checkered
             false,  // in_pit
-            0,      // pit_time_loss
+            0.,      // pit_time_loss
         });
         std::cout << "car adding..." << std::endl;
         car_state_ptr_list.push_back(std::move(car_state_ptr));
@@ -140,15 +140,17 @@ void Race::step() {
 
         double delta{};
 
-        if (pos_i == 1) {
-            delta = car_state_ptr->car.step(config::BLOCKABLE_RANGE + 1.,
-                                            car_state_ptr->car);
+        if (car_state_ptr->in_pit) {
+            car_state_ptr->pit_time_loss += config::TICK;
+            if (car_state_ptr->pit_time_loss >= circuit.pit_time_loss) {
+                Race::pit_exit(car_state_ptr);
+                std::cout << "Pit exit" << std::endl;
+            }
 
         } else {
-            if (car_state_ptr->in_pit) {
-                car_state_ptr->pit_time_loss += config::TICK;
-                if (car_state_ptr->pit_time_loss >= circuit.pit_time_loss)
-                    Race::pit_exit(car_state_ptr);
+            if (pos_i == 1) {
+                delta = car_state_ptr->car.step(config::BLOCKABLE_RANGE + 1.,
+                                                car_state_ptr->car);
 
             } else {
                 CarStatePtr forerunner = Race::get_forerunner(car_state_ptr);
@@ -160,12 +162,12 @@ void Race::step() {
                 if (delta >= distance_gap)
                     Race::overtake(forerunner, car_state_ptr);
             }
-        }
 
-        if (delta == 0.0) {
-            std::cerr << "No." << car_state_ptr->car.car_num << " stopped"
-                      << std::endl;
-            std::exit(1);
+            if (delta == 0.0) {
+                std::cerr << "No." << car_state_ptr->car.car_num << " stopped"
+                          << std::endl;
+                std::exit(1);
+            }
         }
 
         car_state_ptr->distance += delta;

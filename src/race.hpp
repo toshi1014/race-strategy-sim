@@ -19,7 +19,7 @@ struct CarState {
     bool checkered;
 
     bool in_pit;
-    bool pit_time_loss;
+    double pit_time_loss;
 
     CarState& operator=(const CarState&);
 };
