@@ -31,7 +31,7 @@ void Race::add_car(car::Car&& arg_car) {
             arg_car,
             false,  // checkered
             false,  // in_pit
-            0.,      // pit_time_loss
+            0.,     // pit_time_loss
         });
         std::cout << "car adding..." << std::endl;
         car_state_ptr_list.push_back(std::move(car_state_ptr));
@@ -82,9 +82,10 @@ void Race::formation_lap() { grid_fixed = true; }
 void Race::start() {
     using json = nlohmann::json;
     json j;
+    j["num_of_laps"] = num_of_laps;
     j["lap_chart"];
 
-    for (double timer{}; timer < 30. && !all_checkered; timer += config::TICK) {
+    for (double timer{}; !all_checkered; timer += config::TICK) {
         step();
 
         // std::cout << "\n\ntime:\t" << timer << "\n" << std::endl;
@@ -98,6 +99,10 @@ void Race::start() {
                 {"lap", car_state_ptr->car.lap},
                 {"distance", car_state_ptr->distance / circuit.course_length},
                 {"position", car_state_ptr->position},
+                {"compound", car_state_ptr->car.tire_ptr->get_compound_str()},
+                {"age", car_state_ptr->car.tire_ptr->age},
+                {"in_pit", car_state_ptr->in_pit},
+                {"checkered", car_state_ptr->checkered},
             });
             // std::cout << "No." << car_state_ptr->car.car_num
             //           << "\tlap: " << car_state_ptr->car.lap

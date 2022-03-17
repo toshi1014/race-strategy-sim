@@ -4,19 +4,30 @@
 <head>
     <meta charset="utf-8">
     <title>race-strategy-sim</title>
+
     <style>
         canvas {
-            border: 1px solid
+            border: 1px solid;
+        }
+
+        #leaderboard {
+            display: inline;
+            float: left;
         }
     </style>
 </head>
 
 <body>
-    <input type="file" id="picker" accept=".json" onChange="loadSettings(this)"/>
+    <div>
+        <input type="file" id="picker" accept=".json" onChange="loadResultFile(this)" />
+        <button type="button" onClick="start()">start</button>
+    </div>
 
-    <button type="button" onClick="start()">start</button>
+    <div style="margin-top: 50px">
+        <canvas id="canvas" width="900" height="400"></canvas>
 
-    <canvas id="canvas" width="1000" height="500"></canvas>
+        <div id="leaderboard"></div>
+    </div>
 </body>
 
 <script text="text/javascript" src="script.js"></script>
